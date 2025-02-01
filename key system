@@ -1,0 +1,78 @@
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local TextBox = Instance.new("TextBox")
+local CopyKeyButton = Instance.new("TextButton")
+local VerifyKeyButton = Instance.new("TextButton")
+local UICorner = Instance.new("UICorner")
+local UIGradient = Instance.new("UIGradient")
+
+local DataStoreService = game:GetService("DataStoreService")
+local KeyStore = DataStoreService:GetDataStore("KeyVerificationStore")
+
+ScreenGui.Parent = game.CoreGui
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+Frame.Size = UDim2.new(0, 350, 0, 250)
+Frame.Position = UDim2.new(0.5, -175, 0.5, -125)
+Frame.Visible = true
+Frame.BorderSizePixel = 0
+
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = Frame
+
+UIGradient.Parent = Frame
+UIGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 170, 255)),
+    ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 170))
+}
+UIGradient.Rotation = 45
+
+TextBox.Parent = Frame
+TextBox.Size = UDim2.new(0, 250, 0, 40)
+TextBox.Position = UDim2.new(0, 50, 0, 50)
+TextBox.PlaceholderText = "Digite a key aqui"
+TextBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextBox.BorderSizePixel = 0
+
+CopyKeyButton.Parent = Frame
+CopyKeyButton.Size = UDim2.new(0, 250, 0, 40)
+CopyKeyButton.Position = UDim2.new(0, 50, 0, 110)
+CopyKeyButton.Text = "Pegar Key"
+CopyKeyButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+CopyKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CopyKeyButton.BorderSizePixel = 0
+CopyKeyButton.MouseButton1Click:Connect(function()
+    setclipboard("https://getkeybrokhaven456.vercel.app/")
+end)
+
+VerifyKeyButton.Parent = Frame
+VerifyKeyButton.Size = UDim2.new(0, 250, 0, 40)
+VerifyKeyButton.Position = UDim2.new(0, 50, 0, 170)
+VerifyKeyButton.Text = "Verificar Key"
+VerifyKeyButton.BackgroundColor3 = Color3.fromRGB(0, 255, 170)
+VerifyKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+VerifyKeyButton.BorderSizePixel = 0
+VerifyKeyButton.MouseButton1Click:Connect(function()
+    local key = TextBox.Text
+    if key:sub(1, 7) == "CLH766_" then
+        local firstUse = KeyStore:GetAsync(key)
+        local currentTime = os.time()
+        
+        if firstUse then
+            if currentTime - firstUse >= 86400 then
+                print("Key inválida! Já foi utilizada há mais de 24 horas.")
+            else
+                print("Key já utilizada, mas ainda válida dentro de 24 horas.")
+            end
+        else
+            KeyStore:SetAsync(key, currentTime)
+            Frame.Visible = false  -- Oculta o painel ao validar a key
+            print("Key correta! Acesso liberado.")
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Joaov8tor/BrokhavenCLH-FUTURISTA/refs/heads/main/Clh"))()
+        end
+    else
+        print("Key incorreta!")
+    end
+end)
+
